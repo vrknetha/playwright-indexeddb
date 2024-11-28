@@ -53,8 +53,8 @@ export class PlaywrightIndexedDB {
         return new Promise((resolve, reject) => {
           const request = indexedDB.open(params.dbName);
           request.onerror = () => reject(new Error("Failed to open database"));
-          request.onsuccess = () => {
-            const db = request.result;
+          request.onsuccess = (event: Event) => {
+            const db = (event.target as IDBOpenDBRequest).result;
             try {
               const transaction = db.transaction(params.storeName, "readonly");
               const store = transaction.objectStore(params.storeName);
