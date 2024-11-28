@@ -7,18 +7,17 @@ test.describe("PlaywrightIndexedDB", () => {
   });
 
   test("should perform CRUD operations on IndexedDB", async ({ page }) => {
-    // Initialize database first
     await page.evaluate(() => {
       return new Promise<void>((resolve, reject) => {
         const deleteReq = indexedDB.deleteDatabase("testDB");
-        deleteReq.onsuccess = () => {
+        deleteReq.onsuccess = (): void => {
           const request = indexedDB.open("testDB", 1);
-          request.onerror = () => reject(request.error);
-          request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+          request.onerror = (): void => reject(request.error);
+          request.onupgradeneeded = (event: IDBVersionChangeEvent): void => {
             const db = (event.target as IDBOpenDBRequest).result;
             db.createObjectStore("testStore", { keyPath: "id" });
           };
-          request.onsuccess = () => {
+          request.onsuccess = (): void => {
             request.result.close();
             resolve();
           };
@@ -32,25 +31,20 @@ test.describe("PlaywrightIndexedDB", () => {
       version: 1,
     });
 
-    // Test putting an item
     const testItem = { id: 1, name: "Test Item" };
     await db.putItem(testItem);
 
-    // Test getting an item
     const retrievedItem = await db.getItem(1);
     expect(retrievedItem).toEqual(testItem);
 
-    // Test getting all items
     const allItems = await db.getAllItems();
     expect(allItems).toHaveLength(1);
     expect(allItems[0]).toEqual(testItem);
 
-    // Test deleting an item
     await db.deleteItem(1);
     const deletedItem = await db.getItem(1);
     expect(deletedItem).toBeNull();
 
-    // Test clearing the store
     await db.putItem({ id: 2, name: "Another Item" });
     await db.clear();
     const clearedItems = await db.getAllItems();
@@ -58,17 +52,18 @@ test.describe("PlaywrightIndexedDB", () => {
   });
 
   test("should handle errors gracefully", async ({ page }) => {
-    // Initialize DB with a specific store
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase("testDB");
-        request.onsuccess = () => {
+        request.onsuccess = (): void => {
           const openRequest = indexedDB.open("testDB", 1);
-          openRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+          openRequest.onupgradeneeded = (
+            event: IDBVersionChangeEvent
+          ): void => {
             const db = (event.target as IDBOpenDBRequest).result;
             db.createObjectStore("existingStore", { keyPath: "id" });
           };
-          openRequest.onsuccess = () => {
+          openRequest.onsuccess = (): void => {
             openRequest.result.close();
             resolve();
           };
