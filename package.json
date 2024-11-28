@@ -1,0 +1,46 @@
+{
+  "name": "playwright-indexeddb",
+  "version": "1.0.0",
+  "description": "Access and manipulate IndexedDB within Playwright tests",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "playwright test",
+    "lint": "biome check .",
+    "format": "biome format . --write",
+    "prepare": "husky install",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "indexeddb",
+    "browser",
+    "database"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "1.4.1",
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "typescript": "^5.3.2"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "biome check --apply",
+      "biome format --write"
+    ]
+  }
+}
