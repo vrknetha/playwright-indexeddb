@@ -81,13 +81,13 @@ export class PlaywrightIndexedDB {
   async putItem<T>(item: T, key?: IDBValidKey): Promise<void> {
     await this.page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      function (params: any): any {
-        return new Promise<void>((resolve: () => void, reject) => {
+      function (params: any): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
           const request = indexedDB.open(params.dbName);
           request.onerror = (): void =>
             reject(new Error("Failed to open database"));
-          request.onsuccess = (): void => {
-            const db = request.result;
+          request.onsuccess = (event: Event): void => {
+            const db = (event.target as IDBOpenDBRequest).result;
             try {
               const transaction = db.transaction(params.storeName, "readwrite");
               const store = transaction.objectStore(params.storeName);
@@ -113,25 +113,18 @@ export class PlaywrightIndexedDB {
 
   async deleteItem(key: IDBValidKey): Promise<void> {
     await this.page.evaluate(
-      ({
-        dbName,
-        storeName,
-        key,
-      }: {
-        dbName: string;
-        storeName: string;
-        key: IDBValidKey;
-      }): Promise<void> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      function (params: any): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-          const request = indexedDB.open(dbName);
+          const request = indexedDB.open(params.dbName);
           request.onerror = (): void =>
             reject(new Error("Failed to open database"));
           request.onsuccess = (): void => {
             const db = request.result;
             try {
-              const transaction = db.transaction(storeName, "readwrite");
-              const store = transaction.objectStore(storeName);
-              const deleteRequest = store.delete(key);
+              const transaction = db.transaction(params.storeName, "readwrite");
+              const store = transaction.objectStore(params.storeName);
+              const deleteRequest = store.delete(params.key);
               deleteRequest.onsuccess = (): void => {
                 db.close();
                 resolve();
