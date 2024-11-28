@@ -29,7 +29,7 @@ test.describe("PlaywrightIndexedDB", () => {
     const db = new PlaywrightIndexedDB(page, {
       dbName: "testDB",
       storeName: "testStore",
-      version: 1
+      version: 1,
     });
 
     // Test putting an item
@@ -79,11 +79,11 @@ test.describe("PlaywrightIndexedDB", () => {
     const db = new PlaywrightIndexedDB(page, {
       dbName: "testDB",
       storeName: "nonexistentStore",
-      version: 1
+      version: 1,
     });
 
-    const error = await db.getAllItems().catch(e => e);
+    const error = await db.getAllItems().catch((e) => e);
     expect(error).toBeInstanceOf(Error);
     expect(error.message).toContain("not found");
   });
-}); 
+});
